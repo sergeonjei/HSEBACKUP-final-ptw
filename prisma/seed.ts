@@ -22,7 +22,6 @@ async function main() {
         email: 'admin@example.com',
         password: hashedPassword,
         role: UserRole.ADMIN,
-        emailVerified: new Date(),
       },
     });
     

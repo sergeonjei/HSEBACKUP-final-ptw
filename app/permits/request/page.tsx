@@ -1,7 +1,14 @@
+import { Suspense } from "react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import PermitRequestForm from "@/components/permits/PermitRequestForm";
+import dynamic from "next/dynamic";
+
+// Dynamically import the PermitRequestForm with no SSR
+const PermitRequestForm = dynamic(
+  () => import("@/components/permits/PermitRequestForm"),
+  { ssr: false }
+);
 
 export default async function PermitRequestPage() {
   const session = await getServerSession(authOptions);
@@ -25,7 +32,9 @@ export default async function PermitRequestPage() {
         <div className="py-4">
           <div className="bg-white shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:p-6">
-              <PermitRequestForm />
+              <Suspense fallback={<div>Loading form...</div>}>
+                <PermitRequestForm />
+              </Suspense>
             </div>
           </div>
         </div>

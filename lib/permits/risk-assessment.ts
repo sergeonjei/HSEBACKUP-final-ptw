@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import type { RiskLevel, UserRole } from "@prisma/client";
+import { PrismaClient, UserRole } from "@prisma/client";
+import type { RiskLevel as PrismaRiskLevel } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -64,14 +64,38 @@ export async function createRiskAssessment(data: RiskAssessmentData): Promise<Ri
     throw new Error("Invalid permit status for risk assessment");
   }
 
-  // Create risk assessment
+  // Create risk assessment - combine hazards and controls in the JSON hazards field
   const riskAssessment = await prisma.riskAssessment.create({
     data: {
       permitId,
       assessorId,
-      hazards: hazards as any, // JSON field
-      controls: controls as any, // JSON field
+      // Properly serialize to JSON
+      hazards: JSON.parse(JSON.stringify({ hazards, controls })),
       riskLevel,
+    },
+    include: {
+      permit: {
+        select: {
+          permitNumber: true,
+          workType: true, 
+          location: true,
+          startDate: true,
+          endDate: true,
+          status: true,
+        },
+      },
+      assessor: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      reviewer: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
     },
   });
 
@@ -81,7 +105,8 @@ export async function createRiskAssessment(data: RiskAssessmentData): Promise<Ri
     data: { status: "RISK_ASSESSMENT_COMPLETED" },
   });
 
-  return riskAssessment;
+  // The type is correct now since we included the relations
+  return riskAssessment as unknown as RiskAssessmentWithRelations;
 }
 
 export async function validateRiskAssessment(userId: string, permitId: string) {
@@ -141,7 +166,7 @@ export async function reviewRiskAssessment(
   riskAssessmentId: string,
   reviewerId: string,
   approved: boolean
-): Promise<RiskAssessment> {
+): Promise<RiskAssessmentWithRelations> {
   const [reviewer, riskAssessment] = await Promise.all([
     prisma.user.findUnique({ where: { id: reviewerId } }),
     prisma.riskAssessment.findUnique({
@@ -164,6 +189,30 @@ export async function reviewRiskAssessment(
   const updated = await prisma.riskAssessment.update({
     where: { id: riskAssessmentId },
     data: { reviewerId },
+    include: {
+      permit: {
+        select: {
+          permitNumber: true,
+          workType: true,
+          location: true,
+          startDate: true,
+          endDate: true,
+          status: true,
+        },
+      },
+      assessor: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      reviewer: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
   });
 
   // Update permit status based on approval
@@ -174,7 +223,7 @@ export async function reviewRiskAssessment(
     },
   });
 
-  return updated;
+  return updated as unknown as RiskAssessmentWithRelations;
 }
 
 export async function getRiskAssessmentsByRole(userId: string): Promise<RiskAssessmentWithRelations[]> {

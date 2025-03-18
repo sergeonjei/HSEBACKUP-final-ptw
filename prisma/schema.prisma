@@ -13,16 +13,16 @@ datasource db {
 model Account {
   id                String  @id @default(cuid())
   userId            String
-  type             String
-  provider         String
+  type              String
+  provider          String
   providerAccountId String
-  refresh_token    String? @db.Text
-  access_token     String? @db.Text
-  expires_at       Int?
-  token_type       String?
-  scope            String?
-  id_token         String? @db.Text
-  session_state    String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -38,27 +38,27 @@ model Session {
 }
 
 model User {
-  id              String         @id @default(cuid())
-  name            String?
-  email           String?        @unique
-  emailVerified   DateTime?
-  password        String?        @db.Text
-  image           String?
-  role            UserRole       @default(USER)
-  companyId       String?
-  accounts        Account[]
-  sessions        Session[]
-  notifications   Notification[]
-  activityLogs    ActivityLog[]  @relation("UserActivityLogs")
-  company         Company?       @relation(fields: [companyId], references: [id])
-  requestedPermits Permit[]      @relation("requester")
-  approvedPermits  Permit[]      @relation("approver") 
-  heldPermits      Permit[]      @relation("holder")
-  picPermits       Permit[]      @relation("pic")
+  id               String           @id @default(cuid())
+  name             String?
+  email            String?          @unique
+  emailVerified    DateTime?
+  password         String?          @db.Text
+  image            String?
+  role             UserRole         @default(USER)
+  companyId        String?
+  accounts         Account[]
+  sessions         Session[]
+  notifications    Notification[]
+  activityLogs     ActivityLog[]    @relation("UserActivityLogs")
+  company          Company?         @relation(fields: [companyId], references: [id])
+  requestedPermits Permit[]         @relation("requester")
+  approvedPermits  Permit[]         @relation("approver")
+  heldPermits      Permit[]         @relation("holder")
+  picPermits       Permit[]         @relation("pic")
   assessedRisks    RiskAssessment[] @relation("assessor")
   reviewedRisks    RiskAssessment[] @relation("reviewer")
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 enum UserRole {
@@ -126,48 +126,48 @@ enum RiskLevel {
 }
 
 model Company {
-  id          String    @id @default(cuid())
-  name        String
-  industry    String
-  users       User[]
-  permits     Permit[]  @relation("CompanyPermits")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  industry  String
+  users     User[]
+  permits   Permit[] @relation("CompanyPermits")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Permit {
-  id                String         @id @default(cuid())
-  permitNumber      String         @unique
-  workType          String
-  location          String
-  startDate         DateTime
-  endDate           DateTime
-  status            PermitStatus   @default(DRAFT)
-  requesterId       String
-  approverId        String?
-  holderId          String?
-  picId             String?
-  companyId         String
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  requester         User           @relation("requester", fields: [requesterId], references: [id])
-  approver          User?          @relation("approver", fields: [approverId], references: [id])
-  holder            User?          @relation("holder", fields: [holderId], references: [id])
-  pic               User?          @relation("pic", fields: [picId], references: [id])
-  company           Company        @relation("CompanyPermits", fields: [companyId], references: [id])
-  riskAssessment    RiskAssessment?
+  id             String          @id @default(cuid())
+  permitNumber   String          @unique
+  workType       String
+  location       String
+  startDate      DateTime
+  endDate        DateTime
+  status         PermitStatus    @default(DRAFT)
+  requesterId    String
+  approverId     String?
+  holderId       String?
+  picId          String?
+  companyId      String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  requester      User            @relation("requester", fields: [requesterId], references: [id])
+  approver       User?           @relation("approver", fields: [approverId], references: [id])
+  holder         User?           @relation("holder", fields: [holderId], references: [id])
+  pic            User?           @relation("pic", fields: [picId], references: [id])
+  company        Company         @relation("CompanyPermits", fields: [companyId], references: [id])
+  riskAssessment RiskAssessment?
 }
 
 model RiskAssessment {
-  id            String    @id @default(cuid())
-  permitId      String    @unique
-  assessorId    String
-  reviewerId    String?
-  riskLevel     RiskLevel
-  hazards       Json
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  permit        Permit    @relation(fields: [permitId], references: [id])
-  assessor      User      @relation("assessor", fields: [assessorId], references: [id])
-  reviewer      User?     @relation("reviewer", fields: [reviewerId], references: [id])
-} 
+  id         String    @id @default(cuid())
+  permitId   String    @unique
+  assessorId String
+  reviewerId String?
+  riskLevel  RiskLevel
+  hazards    Json
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  permit     Permit    @relation(fields: [permitId], references: [id])
+  assessor   User      @relation("assessor", fields: [assessorId], references: [id])
+  reviewer   User?     @relation("reviewer", fields: [reviewerId], references: [id])
+}

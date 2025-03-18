@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { en } from '../translations/en'
 import { ar } from '../translations/ar'

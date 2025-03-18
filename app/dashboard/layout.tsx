@@ -2,9 +2,19 @@ import React from "react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import Sidebar from "@/components/dashboard/Sidebar";
-import Header from "@/components/dashboard/Header";
+import dynamic from "next/dynamic";
 import { Role } from "@prisma/client";
+
+// Dynamically import client components with no SSR
+const ClientSidebar = dynamic(
+  () => import("@/components/dashboard/ClientSidebar"),
+  { ssr: false }
+);
+
+const ClientHeader = dynamic(
+  () => import("@/components/dashboard/ClientHeader"),
+  { ssr: false }
+);
 
 // Define session user type
 interface SessionUser {
@@ -30,9 +40,9 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar userRole={user.role} />
+      <ClientSidebar userRole={user.role} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header user={user} />
+        <ClientHeader user={user} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
           {children}
         </main>

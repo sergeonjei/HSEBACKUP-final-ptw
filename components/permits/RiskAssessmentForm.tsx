@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, FieldArrayWithId } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
@@ -28,6 +28,10 @@ type Hazard = z.infer<typeof hazardSchema>;
 
 interface RiskAssessmentFormProps {
   permitId: string;
+}
+
+interface HazardField extends FieldArrayWithId<RiskAssessmentFormData, 'hazards', 'id'> {
+  controlMeasures: string[];
 }
 
 export default function RiskAssessmentForm({ permitId }: RiskAssessmentFormProps) {
@@ -106,7 +110,7 @@ export default function RiskAssessmentForm({ permitId }: RiskAssessmentFormProps
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="space-y-6">
-        {hazards.map((field, index) => (
+        {hazards.map((field: HazardField, index: number) => (
           <div key={field.id} className="bg-gray-50 p-6 rounded-lg">
             <div className="flex justify-between items-center mb-4">
               <h4 className="text-lg font-medium">Hazard #{index + 1}</h4>

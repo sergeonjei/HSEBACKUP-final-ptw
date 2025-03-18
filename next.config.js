@@ -5,7 +5,9 @@ const nextConfig = {
   },
   // Remove i18n config as it's not supported in App Router
   experimental: {
-    serverActions: true,
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'vercel.app'],
+    },
   },
 }
 

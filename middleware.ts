@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { NextRequestWithAuth } from "next-auth/middleware";
+import type { NextRequest } from 'next/server'
 
 // Define role-based access permissions
 const rolePermissions = {
@@ -22,6 +23,10 @@ const publicPaths = [
   "/api/health",
   "/api/tasks/cron"
 ];
+
+export function middleware(request: NextRequest) {
+  return NextResponse.next()
+}
 
 export default async function middleware(req: NextRequestWithAuth) {
   // Allow public paths
@@ -65,15 +70,11 @@ export default async function middleware(req: NextRequestWithAuth) {
   return NextResponse.next();
 }
 
+// Limit middleware only to these paths to avoid Node module issues on client
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * 1. _next/static (static files)
-     * 2. _next/image (image optimization files)
-     * 3. favicon.ico (favicon file)
-     * 4. public folder
-     */
-    "/((?!_next/static|_next/image|favicon.ico|public).*)",
+    '/api/:path*',
+    '/permits/:path*',
+    '/dashboard/:path*',
   ],
 }; 

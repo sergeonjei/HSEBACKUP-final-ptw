@@ -9,6 +9,20 @@ const nextConfig = {
       allowedOrigins: ['localhost:3000', 'vercel.app'],
     },
   },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Don't resolve 'fs', 'net', etc. on the client to prevent errors
+      config.resolve.fallback = {
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
+        child_process: false,
+        crypto: false,
+      };
+    }
+    return config;
+  },
 }
 
 module.exports = nextConfig 

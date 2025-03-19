@@ -2,8 +2,8 @@ import NextAuth from "next-auth";
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
-import * as bcryptImport from "bcrypt";
-const bcrypt = typeof window === 'undefined' ? bcryptImport : null;
+// Server-side import for bcrypt
+import * as bcrypt from "bcrypt";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -24,10 +24,11 @@ export const authOptions: AuthOptions = {
           },
         });
 
-        if (!user) {
+        if (!user || !user.password) {
           throw new Error("Invalid credentials");
         }
 
+        // Compare password
         const isValid = await bcrypt.compare(credentials.password, user.password);
 
         if (!isValid) {
@@ -49,7 +50,8 @@ export const authOptions: AuthOptions = {
         return {
           ...token,
           id: user.id,
-          role: user.role,
+          // Cast user.role to ensure TypeScript knows it exists
+          role: (user as any).role,
         };
       }
       return token;

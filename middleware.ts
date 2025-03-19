@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { NextRequestWithAuth } from "next-auth/middleware";
-import type { NextRequest } from 'next/server'
 
 // Define role-based access permissions
 const rolePermissions = {
@@ -23,10 +22,6 @@ const publicPaths = [
   "/api/health",
   "/api/tasks/cron"
 ];
-
-export function middleware(request: NextRequest) {
-  return NextResponse.next()
-}
 
 export default async function middleware(req: NextRequestWithAuth) {
   // Allow public paths

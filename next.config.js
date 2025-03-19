@@ -20,6 +20,12 @@ const nextConfig = {
         child_process: false,
         crypto: false,
       };
+      
+      // Exclude server-only packages
+      config.externals.push({
+        'bcrypt': 'bcrypt',
+        'node-pre-gyp': 'node-pre-gyp'
+      });
     }
     return config;
   },

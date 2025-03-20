@@ -36,8 +36,12 @@ export default async function middleware(req: NextRequestWithAuth) {
     return NextResponse.next();
   }
 
-  // Check if user is authenticated
-  const token = await getToken({ req });
+  // Check if user is authenticated - using JWT secret from env
+  const token = await getToken({ 
+    req,
+    secret: process.env.NEXTAUTH_SECRET
+  });
+  
   if (!token) {
     const url = new URL("/auth/login", req.url);
     url.searchParams.set("callbackUrl", req.url);
@@ -71,5 +75,10 @@ export const config = {
     '/api/:path*',
     '/permits/:path*',
     '/dashboard/:path*',
+    '/risk-assessments/:path*',
+    '/users/:path*',
+    '/settings/:path*',
+    '/company/:path*',
+    '/profile/:path*',
   ],
 }; 

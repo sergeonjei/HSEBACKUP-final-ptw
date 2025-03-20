@@ -42,8 +42,8 @@ export async function createPermit(
       status: "DRAFT",
       requesterId,
       companyId,
-      description,
-      equipment,
+      ...(description ? { description } : {}),
+      ...(equipment ? { equipment } : {}),
     },
   });
 }

@@ -3,7 +3,7 @@
 import React from 'react';
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import RiskAssessmentForm from "@/components/permits/RiskAssessmentForm";
 import type { PermitStatus } from "@prisma/client";

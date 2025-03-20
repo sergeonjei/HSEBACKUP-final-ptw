@@ -5,12 +5,12 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
+# Copy Prisma schema first
+COPY prisma ./prisma/
+
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
 RUN npm ci
-
-# Copy Prisma schema early for better caching
-COPY prisma ./prisma/
 
 # Rebuild the source code only when needed
 FROM base AS builder
